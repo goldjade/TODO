@@ -77,16 +77,19 @@ export default class App extends Component {
     event.preventDefault();
     // 이벤트 갱신 막기! a 태그 할때 많이 쓴거
     // { id: 4, title: "할일 4", completed: false },
+    //todoDate 는 배열이고 요소들은 위 처럼 구성되어있어 {}객체로 만들어줌.
+    //그래야 .map을 통해 규칙적인 jsx 를 리턴할 수 있으니까.
     const addTodo = {
-      id: Date.now(),
-      title: this.state.todoValue,
-      completed: false,
+      id: Date.now(), //id 값은 배열.map의 key로 활용 예정 unique 값을 만들려고 시간을 넣음
+      title: this.state.todoValue, //할일 입력창의 내용을 추가
+      completed: false, //할 일이 추가 될때는 완료하지 않았으므로 false로 초기화
     };
-
+    // 새로운 할 일을 일단복사하고 복사된 배열에 추가해서 업데이트
     // todoData 는 원래 [배열 이였는데] addTodosms 객체로 들어가서 에러가남
     // 그래서 [addTodo] 배열로 감싸 줌
-    // ...다 뜯어버리고 새로운 배열로 만들고 새로운 addTodo 추가
+    // 기존 할 일을 destructyring ( ...다 뜯어버리고) 복사본 만들고 새로운 addTodo 추가
     this.setState({ todoData: [...this.state.todoData, addTodo] });
+    // 새로운 todo를 추가 했으므로 내용입력창의 글자를 초기화
     this.setState({ todoValue: "" });
   };
   render() {
