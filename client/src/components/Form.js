@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useCallback } from "react";
 
-const Form = ({ todoValue, setTodoValue, addTodoSubmit }) => {
-  const changeTodoValue = (event) => {
-    // console.log(event.target.value);
-    setTodoValue(event.target.value);
-  };
+const Form = React.memo(({ todoValue, setTodoValue, addTodoSubmit }) => {
+  // console.log("Form Rendering...");
+  const changeTodoValue = useCallback(
+    (event) => {
+      // console.log(event.target.value);
+      setTodoValue(event.target.value);
+    },
+    [setTodoValue]
+  );
   return (
     <form onSubmit={addTodoSubmit} className="flex pt-2">
       <input
@@ -21,6 +25,6 @@ const Form = ({ todoValue, setTodoValue, addTodoSubmit }) => {
       />
     </form>
   );
-};
+});
 
 export default Form;
