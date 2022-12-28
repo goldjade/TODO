@@ -17,21 +17,31 @@ import List from "./components/List";
   useEffect() Life-cycle 체크가능
 
  */
+/*최초에 로컬에서 todo data를 읽어와서 
+todoData라는 useState를 초기화 해주어야 한다. useState(초기값)
+초기값: 로컬에서 불러서 채운다
+*/
+let initTodo = localStorage.getItem("todoData");
+// 삼항연산자를 이용해서 초기값이 없으면
+// 빈배열 [] 로 초기화한다.
+// 읽어온 데이터가 있으면 JSON.stringify() 저장한 파일을
+// JSON.parse() 로 다시 객체화하여 사용한다.
+initTodo = initTodo ? JSON.parse(initTodo) : [];
+
 export default function App() {
   // console.log("APP Rendering...");
-  const [todoData, setTodoData] = useState([
-    { id: 1, title: "할일 1", completed: false },
-    { id: 2, title: "할일 2", completed: true },
-    { id: 3, title: "할일 3", completed: false },
-    { id: 4, title: "할일 4", completed: false },
-  ]);
+  const [todoData, setTodoData] = useState(initTodo);
   const [todoValue, setTodoValue] = useState("");
+
   const deleteClick = useCallback(
     (id) => {
       // 클릭된 ID 와 다른 요소들만 걸러서 새로운 배열 생성
       const nowTodo = todoData.filter((item) => item.id !== id);
       console.log("클릭", nowTodo);
+      // 목록을 갱신 한다
       setTodoData(nowTodo);
+      //로컬에 저장(DB)예정
+      localStorage.setItem("todoData", JSON.stringify(nowTodo));
     },
     [todoData]
   );
@@ -41,6 +51,16 @@ export default function App() {
     // { id: 4, title: "할일 4", completed: false },
     //todoDate 는 배열이고 요소들은 위 처럼 구성되어있어 {}객체로 만들어줌.
     //그래야 .map을 통해 규칙적인 jsx 를 리턴할 수 있으니까.
+
+    // 공백 문자열 제거 추가
+    let str = todoValue;
+    str = str.replace(/^\s+|\s+$/gm, "");
+    if (str.length === 0) {
+      alert("내용을 입력하세요.");
+      setTodoValue("");
+      return;
+    }
+
     const addTodo = {
       id: Date.now(), //id 값은 배열.map의 key로 활용 예정 unique 값을 만들려고 시간을 넣음
       title: todoValue, //할일 입력창의 내용을 추가
@@ -51,12 +71,17 @@ export default function App() {
     // 그래서 [addTodo] 배열로 감싸 줌
     // 기존 할 일을 destructyring ( ...다 뜯어버리고) 복사본 만들고 새로운 addTodo 추가
     setTodoData([...todoData, addTodo]);
+    //로컬에 저장(DB)예정
+    localStorage.setItem("todoData", JSON.stringify([...todoData, addTodo]));
+
     // 새로운 todo를 추가 했으므로 내용입력창의 글자를 초기화
     setTodoValue("");
   };
 
   const deleteAllClick = () => {
     setTodoData([]);
+    // 자료를 지운다(DB 초기화) 지금은 그냥 날리지만 원래 DB날리면 큰일스
+    localStorage.clear();
   };
 
   return (
@@ -69,7 +94,7 @@ export default function App() {
         <List
           todoData={todoData}
           setTodoData={setTodoData}
-          deleteClick={deleteClick}
+          deleteClick={deleteClick} 
         />
         <Form
           addTodoSubmit={addTodoSubmit}
